@@ -5,17 +5,25 @@ class UserProvider extends ChangeNotifier {
   final users = <User>[
     User(
         id: 'mkmkmk',
-        name: 'name',
-        email: 'email',
-        mobile: 'mobile',
-        address: 'address')
+        name: 'Milan Chabhadiya',
+        email: 'milan.c@simformsolutions.com',
+        mobile: '9227165251',
+        address: 'Shyamal, Ahmedabad')
   ];
   void addUser(User model) {
     users.add(model);
     notifyListeners();
   }
 
-  void editUser(User model) {}
+  void updateUser(User model) {
+    for (int i = 0; i < users.length; i++) {
+      if (users[i].id == model.id) {
+        users[i] = model;
+        notifyListeners();
+        break;
+      }
+    }
+  }
 
   void deleteUser(User model) {
     for (int i = 0; i < users.length; i++) {

@@ -8,16 +8,17 @@ import 'package:practical_using_provider/widgets/appbar.dart';
 import 'package:practical_using_provider/widgets/textfield.dart';
 import 'package:provider/provider.dart';
 
-class AddUserScreen extends StatelessWidget {
-  const AddUserScreen({Key? key}) : super(key: key);
-
+class EditUserScreen extends StatelessWidget {
+  const EditUserScreen({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final args =
-        ModalRoute.of(context)!.settings.arguments as AddUserScreenArguments;
+        ModalRoute.of(context)!.settings.arguments as EditUserScreenArguments;
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<UserProvider>.value(value: args.userProvider),
+        ChangeNotifierProvider<UserProvider>.value(
+          value: args.userProvider,
+        ),
         Provider(
           create: (context) => EditUserProvider(),
           dispose: (context, value) {
@@ -31,8 +32,9 @@ class AddUserScreen extends StatelessWidget {
       builder: (context, child) {
         final provider = context.read<EditUserProvider>();
         final userProvider = context.read<UserProvider>();
+        provider.setUserValueInController(args.model);
         return Scaffold(
-          appBar: PRAppBar(context: context, title: 'Add User'),
+          appBar: PRAppBar(context: context, title: 'Edit User'),
           body: Form(
             key: provider.formKey,
             child: Padding(
@@ -105,9 +107,9 @@ class AddUserScreen extends StatelessWidget {
                         final address = provider.addressController.text.trim();
                         if (provider.formKey.currentState?.validate() ??
                             false) {
-                          userProvider.addUser(
+                          userProvider.updateUser(
                             User(
-                              id: DateTime.now().toString(),
+                              id: args.model.id,
                               name: name,
                               email: email,
                               mobile: mobile,
@@ -115,13 +117,13 @@ class AddUserScreen extends StatelessWidget {
                             ),
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('User added.')));
+                              const SnackBar(content: Text('User updated.')));
                           if (context.mounted) {
                             context.pop();
                           }
                         }
                       },
-                      child: const Text('Add'),
+                      child: const Text('Update'),
                     ),
                   ],
                 ),
@@ -134,7 +136,8 @@ class AddUserScreen extends StatelessWidget {
   }
 }
 
-class AddUserScreenArguments {
+class EditUserScreenArguments {
+  final User model;
   final UserProvider userProvider;
-  AddUserScreenArguments({required this.userProvider});
+  EditUserScreenArguments({required this.model, required this.userProvider});
 }

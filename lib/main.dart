@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:practical_using_provider/modules/user/screens/all_users.dart';
+import 'package:practical_using_provider/services/navigation_service.dart';
+import 'package:practical_using_provider/utils/theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,12 +12,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const UserScreen(),
+      debugShowCheckedModeBanner: false,
+      title: 'Practical using Provider',
+      theme: AppTheme.lightTheme,
+      onGenerateRoute: NavigationService().onGenerateRoute,
+      navigatorKey: NavigationService().navigatorKey,
     );
   }
 }
