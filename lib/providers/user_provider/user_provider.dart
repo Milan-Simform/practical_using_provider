@@ -10,6 +10,7 @@ class UserProvider extends ChangeNotifier {
         mobile: '9227165251',
         address: 'Shyamal, Ahmedabad')
   ];
+
   void addUser(User model) {
     users.add(model);
     notifyListeners();
@@ -18,14 +19,16 @@ class UserProvider extends ChangeNotifier {
   void updateUser(User model) {
     for (int i = 0; i < users.length; i++) {
       if (users[i].id == model.id) {
-        users[i] = model;
-        notifyListeners();
+        if (users[i] != model) {
+          users[i] = model;
+          notifyListeners();
+        }
         break;
       }
     }
   }
 
-  void deleteUser(User model) {
+  void deleteUser(User model, BuildContext context) {
     for (int i = 0; i < users.length; i++) {
       if (users[i].id == model.id) {
         users.removeAt(i);
@@ -33,5 +36,7 @@ class UserProvider extends ChangeNotifier {
         break;
       }
     }
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('User deleted.')));
   }
 }
