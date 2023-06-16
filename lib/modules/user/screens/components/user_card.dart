@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:practical_using_provider/models/user/user.dart';
-import 'package:practical_using_provider/modules/user/screens/edit_user.dart';
+import 'package:practical_using_provider/modules/user/screens/add_edit_user.dart';
+import 'package:practical_using_provider/modules/user/screens/components/usercard_text.dart';
 import 'package:practical_using_provider/providers/user_provider/user_provider.dart';
 import 'package:practical_using_provider/services/navigation_service.dart';
 import 'package:practical_using_provider/utils/extensions.dart';
 import 'package:provider/provider.dart';
 
 class UserCard extends StatelessWidget {
-  const UserCard({Key? key, required this.model}) : super(key: key);
-  final User model;
+  const UserCard({Key? key, required this.index}) : super(key: key);
+  final int index;
+
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<UserProvider>();
+    final provider = context.read<UserProvider?>();
+    if (provider == null) return const SizedBox();
+    final user = provider.users[index];
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -22,43 +25,39 @@ class UserCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Name: ${model.name}',
-              style: Theme.of(context).textTheme.bodyLarge,
-              overflow: TextOverflow.ellipsis,
+            Selector<UserProvider, String>(
+              selector: (_, __) => provider.users[index].name,
+              builder: (_, name, __) {
+                return UserCardText('Name: $name', context);
+              },
             ),
-            Text(
-              'Mobile: ${model.mobile}',
-              style: Theme.of(context).textTheme.bodyLarge,
-              overflow: TextOverflow.ellipsis,
+            Selector<UserProvider, String>(
+              selector: (_, __) => provider.users[index].mobile,
+              builder: (_, mobile, __) =>
+                  UserCardText('Mobile: $mobile', context),
             ),
-            Text(
-              'Email: ${model.email}',
-              style: Theme.of(context).textTheme.bodyLarge,
-              overflow: TextOverflow.ellipsis,
+            Selector<UserProvider, String>(
+              selector: (_, __) => provider.users[index].email,
+              builder: (_, email, __) => UserCardText('Email: $email', context),
             ),
-            Text(
-              'Address: ${model.address}',
-              style: Theme.of(context).textTheme.bodyLarge,
-              overflow: TextOverflow.ellipsis,
+            Selector<UserProvider, String>(
+              selector: (_, __) => provider.users[index].address,
+              builder: (_, address, __) =>
+                  UserCardText('Address: $address', context),
             ),
             Row(
               children: [
                 IconButton(
                   onPressed: () => context.toNamed(
-                    Routes.editUserScreen,
-                    arguments: EditUserScreenArguments(
-                        model: model, userProvider: provider),
+                    Routes.addEditUserScreen,
+                    arguments: AddEditUserScreenArguments(
+                        model: user, userProvider: provider),
                   ),
                   icon: const Icon(Icons.edit),
                 ),
                 const Spacer(),
                 IconButton(
-                  onPressed: () {
-                    provider.deleteUser(model);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('User deleted.')));
-                  },
+                  onPressed: () => provider.deleteUser(user, context),
                   icon: const Icon(Icons.delete_forever),
                 ),
               ],
